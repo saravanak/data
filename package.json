@@ -11,11 +11,11 @@
     "build": "ember build",
     "build:production": "ember build --environment=production",
     "start": "ember server",
-    "test": "ember test",
+    "test": "ember test && ember test --record-data-rfc-build",
     "test:all": "ember try:each",
     "test:node": "node node-tests/nodetest-runner.js",
-    "test:production": "ember test --environment=production",
-    "test:optional-features": "ember test --environment=test-optional-features"
+    "test:production": "ember test -e production && ember test -e production --record-data-rfc-build",
+    "test:optional-features": "ember test -e test-optional-features && ember test -e test-optional-features --record-data-rfc-build"
   },
   "author": "",
   "license": "MIT",

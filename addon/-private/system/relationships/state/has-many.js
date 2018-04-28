@@ -108,7 +108,7 @@ export default class ManyRelationship extends Relationship {
       return;
     }
 
-    assertPolymorphicType(this.internalModel, this.relationshipMeta, internalModel);
+    assertPolymorphicType(this.internalModel, this.relationshipMeta, internalModel, this.store);
     super.addInternalModel(internalModel, idx);
     this.scheduleManyArrayUpdate(internalModel, idx);
   }

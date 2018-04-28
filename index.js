@@ -13,14 +13,30 @@ const calculateCacheKeyForTree = require('calculate-cache-key-for-tree');
 
 // allow toggling of heimdall instrumentation
 let INSTRUMENT_HEIMDALL = false;
+let USE_RECORD_DATA_RFC = false;
+let BUILD_BOTH = false;
 let args = process.argv;
 
 for (let i = 1; i < args.length; i++) {
   if (args[i] === '--instrument') {
     INSTRUMENT_HEIMDALL = true;
-    break;
+    if (USE_RECORD_DATA_RFC) {
+      break;
+    }
+  } else if (args[i] === '--record-data-rfc-build') {
+    USE_RECORD_DATA_RFC = !BUILD_BOTH;
+    if (INSTRUMENT_HEIMDALL && BUILD_BOTH) {
+      break;
+    }
+  } else if (args[i] === '--build-both') {
+    USE_RECORD_DATA_RFC = false;
+    BUILD_BOTH = true;
+    if (INSTRUMENT_HEIMDALL) {
+      break;
+    }
   }
 }
+
 const NOOP_TREE = function(dir) {
   return { inputTree: dir, rebuild() { return []; } };
 };
@@ -42,7 +58,7 @@ module.exports = {
   name: 'ember-data',
 
   _prodLikeWarning() {
-    let emberEnv = process.env.EMBER_ENV
+    let emberEnv = process.env.EMBER_ENV;
     if(emberEnv !== 'production' && /production/.test(emberEnv)) {
       this._warn(`Production-like values for EMBER_ENV are deprecated (your EMBER_ENV is "${emberEnv}") and support will be removed in Ember Data 4.0.0. If using ember-cli-deploy, please configure your build using 'production'. Otherwise please set your EMBER_ENV to 'production' for production builds.`);
     }
@@ -146,10 +162,20 @@ module.exports = {
       version() // compile the VERSION into the build
     ]);
 
-    let withPrivate    = new Funnel(tree, { include: ['-private/**'] });
+    let withPrivate;
+
+    if (USE_RECORD_DATA_RFC) {
+      withPrivate = new Funnel(tree, {
+          include: ['-record-data-rfc-private/**']
+        });
+    } else {
+      withPrivate = new Funnel(tree, { include: ['-private/**'] });
+    }
+
     let withoutPrivate = new Funnel(treeWithVersion, {
       exclude: [
         '-private',
+        '-record-data-rfc-private',
         isProductionEnv() && !isInstrumentedBuild() ? '-debug' : false
       ].filter(Boolean),
 
@@ -172,7 +198,7 @@ module.exports = {
 
     privateTree = new Rollup(privateTree, {
       rollup: {
-        entry: '-private/index.js',
+        entry: USE_RECORD_DATA_RFC ? '-record-data-rfc-private/index.js' : '-private/index.js',
         targets: [
           { dest: 'ember-data/-private.js', format: babel.shouldCompileModules() ? 'amd' : 'es', moduleId: 'ember-data/-private' }
         ],
