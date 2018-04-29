@@ -138,6 +138,14 @@ module.exports = {
     }
   },
 
+  config() {
+    return {
+      emberData: {
+        enableRecordDataRFCBuild: USE_RECORD_DATA_RFC
+      }
+    };
+  },
+
   blueprintsPath() {
     return path.join(__dirname, 'blueprints');
   },

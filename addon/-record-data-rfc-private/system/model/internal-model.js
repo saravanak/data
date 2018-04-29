@@ -227,6 +227,16 @@ export default class InternalModel {
     return this.currentState.dirtyType;
   }
 
+  // DO NOT USE : purely to ease the transition in tests
+  get _attributes() {
+    return this._modelData._attributes;
+  }
+
+  // DO NOT USE : purely to ease the transition in tests
+  get _relationships() {
+    return this._modelData._relationships;
+  }
+
   getRecord(properties) {
     if (!this._record && !this._isDematerializing) {
       heimdall.increment(materializeRecord);

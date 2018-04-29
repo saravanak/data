@@ -1,17 +1,7 @@
 /* eslint-env node */
 const EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
 const merge    = require('broccoli-merge-trees');
-const Funnel = require('broccoli-funnel');
 const yuidoc   = require('./lib/yuidoc');
-
-let BUILD_BOTH = false;
-let args = process.argv;
-
-for (let i = 1; i < args.length; i++) {
-  if (args[i] === '--build-both') {
-    BUILD_BOTH = true;
-  }
-}
 
 module.exports = function(defaults) {
   let app = new EmberAddon(defaults, {});
@@ -24,21 +14,6 @@ module.exports = function(defaults) {
   */
 
   let appTree = app.toTree();
-
-  if (BUILD_BOTH) {
-    console.log('Building both RFC and Canary Branches of ember-data');
-    const rfcApp = new EmberAddon(defaults, {
-      recordDataRFCBuild: true
-    });
-    const rfcTree = new Funnel(rfcApp.toTree(), {
-      destDir: './rfc-dist'
-    });
-    appTree = new Funnel(appTree, {
-      destDir: './canary-dist'
-    });
-
-    appTree = merge([appTree, rfcTree]);
-  }
 
   if (process.env.EMBER_ENV === 'production') {
     return merge([appTree, yuidoc()]);

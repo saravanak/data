@@ -56,7 +56,9 @@ module('integration/inverse_test - inverseFor', {
 });
 
 test("Finds the inverse when there is only one possible available", function(assert) {
-  assert.deepEqual(Job.inverseFor('user', store), {
+  let inverseDefinition = Job.inverseFor('user', store);
+
+  assert.deepEqual(inverseDefinition, {
     type: User,
     name: 'job',
     kind: 'belongsTo',
