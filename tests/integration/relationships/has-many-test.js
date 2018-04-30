@@ -3351,19 +3351,13 @@ test("deleteRecord + unloadRecord fun", function(assert) {
     assert.deepEqual(posts.map(x => x.get('id')), ['post-1', 'post-2', 'post-3', 'post-4', 'post-5']);
 
     return run(() => {
-      return env.store.peekRecord('post', 'post-2').destroyRecord().then(record => {
-        return env.store.unloadRecord(record);
-      });
+      return env.store.peekRecord('post', 'post-2').destroyRecord();
     }).then(() => {
       assert.deepEqual(posts.map(x => x.get('id')), ['post-1', 'post-3', 'post-4', 'post-5']);
-      return env.store.peekRecord('post', 'post-3').destroyRecord().then(record => {
-        return env.store.unloadRecord(record);
-      });
+      return env.store.peekRecord('post', 'post-3').destroyRecord();
     }).then(() => {
       assert.deepEqual(posts.map(x => x.get('id')), ['post-1', 'post-4', 'post-5']);
-      return env.store.peekRecord('post', 'post-4').destroyRecord().then(record => {
-        return env.store.unloadRecord(record);
-      });
+      return env.store.peekRecord('post', 'post-4').destroyRecord();
     }).then(() => {
       assert.deepEqual(posts.map(x => x.get('id')), ['post-1', 'post-5']);
     });
