@@ -14,7 +14,6 @@ const calculateCacheKeyForTree = require('calculate-cache-key-for-tree');
 // allow toggling of heimdall instrumentation
 let INSTRUMENT_HEIMDALL = false;
 let USE_RECORD_DATA_RFC = false;
-let BUILD_BOTH = false;
 let args = process.argv;
 
 for (let i = 1; i < args.length; i++) {
@@ -24,13 +23,7 @@ for (let i = 1; i < args.length; i++) {
       break;
     }
   } else if (args[i] === '--record-data-rfc-build') {
-    USE_RECORD_DATA_RFC = !BUILD_BOTH;
-    if (INSTRUMENT_HEIMDALL && BUILD_BOTH) {
-      break;
-    }
-  } else if (args[i] === '--build-both') {
-    USE_RECORD_DATA_RFC = false;
-    BUILD_BOTH = true;
+    USE_RECORD_DATA_RFC = true;
     if (INSTRUMENT_HEIMDALL) {
       break;
     }
