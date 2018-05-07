@@ -1,4 +1,6 @@
 import { assert } from '@ember/debug';
+import { isEqual, isPresent } from '@ember/utils';
+
 
 // TODO this is now VERY similar to the identity/internal-model map
 //  so we should probably generalize
@@ -20,6 +22,10 @@ export class TypeCache {
 
     if (typeMap === undefined) {
       typeMap = types[modelName] = Object.create(null);
+    }
+
+    if ( isPresent(typeMap[id]) && typeMap[id].data !== undefined && payload.data === undefined && isEqual(JSON.stringify(typeMap[id].links), JSON.stringify(payload.links)) ) {
+      return;
     }
 
     typeMap[id] = payload;

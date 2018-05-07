@@ -48,6 +48,134 @@ module('integration/relationships/one_to_many_test - OneToMany relationships', {
   }
 });
 
+
+
+test("Relationship is not reset when data is not included from the belongsTo side - sync", function(assert) {
+  var account, user;
+  run(function () {
+    store.push({
+      data: {
+        id: '8',
+        type: 'user',
+        attributes: {
+          name: 'Stanley'
+        },
+        relationships: {
+          accounts: {
+            links: {
+              related: '/users/8/accounts'
+            },
+            data: [{
+              type: 'account',
+              id:  '2'
+            },{
+              type: 'account',
+              id:  '3'
+            },{
+              type: 'account',
+              id:  '4'
+            }]
+          }
+        }
+      },
+      included: [{
+        id: '2',
+        type: 'account',
+        attributes: {
+          state: 'lonely'
+        },
+        links: {
+          self: '/accounts/2'
+        },
+        relationships: {
+          user: {
+            links: {
+              related: "/accounts/2/user"
+            }
+          }
+        }
+      },{
+        id: '3',
+        type: 'account',
+        attributes: {
+          state: 'calmly'
+        },
+        links: {
+          self: '/accounts/3'
+        },
+        relationships: {
+          user: {
+            links: {
+              related: "/accounts/3/user"
+            }
+          }
+        }
+      },{
+        id: '4',
+        type: 'account',
+        attributes: {
+          state: 'angry'
+        },
+        links: {
+          self: '/accounts/4'
+        },
+        relationships: {
+          user: {
+            links: {
+              related: "/accounts/4/user"
+            }
+          }
+        }
+      }]
+    });
+
+    store.push({
+      data: {
+        id: '2',
+        type: 'account',
+        attributes: {
+          state: 'lonely'
+        },
+        links:{
+          self: '/accounts/2'
+        },
+        relationships: {
+          user: {
+            links: {
+              related: '/accounts/2/user'
+            },
+            data: {
+              type: 'user',
+              id:  '8'
+            }
+          }
+        }
+      },
+      included: [{
+        id: '8',
+        type: 'user',
+        attributes: {
+          name: 'Stanley'
+        },
+        links: {
+          self: '/users/8'
+        },
+        relationships: {
+          accounts: {
+            links: {
+              related: "/users/8/accounts"
+            }
+          }
+        }
+      }]
+    });
+
+  });
+  let fetchedUser = store.peekRecord('user', 8);
+  assert.equal(fetchedUser.get('name'), 'Stanley', 'Account initialized properly');
+  assert.equal(fetchedUser.get('accounts.length'), 3, 'Account initialized properly');
+});
+
 /*
   Server loading tests
 */
